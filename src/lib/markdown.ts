@@ -1,4 +1,5 @@
 import { Section } from './types'
+import { Theme } from './themes'
 
 const TECH_COLORS: Record<string, string> = {
   'HTML5': 'E34F26', 'CSS3': '1572B6', 'JavaScript': 'F7DF1E', 'TypeScript': '3178C6',
@@ -25,15 +26,16 @@ function techColor(t: string): string {
   return TECH_COLORS[t] || 'FFFFFF'
 }
 
-function badgeUrl(label: string, color: string, logo: string, logoColor = 'white'): string {
-  return `https://img.shields.io/badge/${encodeURIComponent(label)}-${color}?style=for-the-badge&logo=${logo}&logoColor=${logoColor}`
+function badgeUrl(label: string, color: string, logo: string, style: string, logoColor = 'white'): string {
+  return `https://img.shields.io/badge/${encodeURIComponent(label)}-${color}?style=${style}&logo=${logo}&logoColor=${logoColor}`
 }
 
-function socialBadgeUrl(platform: string, color: string, logo: string): string {
-  return `https://img.shields.io/badge/${platform}-${color}?style=for-the-badge&logo=${logo}&logoColor=white`
+function socialBadgeUrl(platform: string, color: string, logo: string, style: string): string {
+  return `https://img.shields.io/badge/${platform}-${color}?style=${style}&logo=${logo}&logoColor=white`
 }
 
-export function generateMarkdown(sections: Section[], username: string): string {
+export function generateMarkdown(sections: Section[], username: string, theme: Theme): string {
+  const p = theme.primary.replace('#', '')
   const lines: string[] = []
 
   for (const s of sections) {
@@ -43,9 +45,8 @@ export function generateMarkdown(sections: Section[], username: string): string 
       case 'header': {
         const name = (d.name as string) || username
         const sub = d.subtitle as string
-        const color = ((d.color as string) || '#00e5ff').replace('#', '')
         lines.push('<div align="center">')
-        lines.push(`  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,50:1a1b41,100:0d7377&height=250&section=header&text=${encodeURIComponent(name)}&fontSize=70&fontAlignY=35&fontColor=${color}&animation=fadeIn${sub ? `&desc=${encodeURIComponent(sub)}&descAlignY=55&descAlign=50&descSize=20` : ''}" width="100%" />`)
+        lines.push(`  <img src="https://capsule-render.vercel.app/api?type=waving&color=${theme.bannerGradient}&height=250&section=header&text=${encodeURIComponent(name)}&fontSize=70&fontAlignY=35&fontColor=${p}&animation=fadeIn${sub ? `&desc=${encodeURIComponent(sub)}&descAlignY=55&descAlign=50&descSize=20` : ''}" width="100%" />`)
         lines.push('</div>')
         lines.push('')
         break
@@ -80,24 +81,23 @@ export function generateMarkdown(sections: Section[], username: string): string 
       case 'techstack': {
         const selected = d.selected as string[] | undefined
         if (!selected || selected.length === 0) break
-        const categories = [
+        const cats = [
           { label: 'Frontend', techs: ['HTML5','CSS3','JavaScript','TypeScript','React','Next.js','Angular','TailwindCSS'] },
           { label: 'Backend', techs: ['Node.js','Express','NestJS','Python','Java','Spring Boot'] },
           { label: 'Bases de Datos', techs: ['MongoDB','PostgreSQL','MySQL','SQLite','Prisma'] },
-          { label: 'DevOps & Tools', techs: ['Docker','Git','GitHub_Actions','Linux','NPM','VSCode'] },
+          { label: 'DevOps', techs: ['Docker','Git','GitHub_Actions','Linux','NPM','VSCode'] },
         ]
         lines.push('<h2 align="center">Tech Stack</h2>')
         lines.push('')
-        for (const cat of categories) {
+        for (const cat of cats) {
           const techs = cat.techs.filter((t) => selected.includes(t))
           if (techs.length === 0) continue
           lines.push('<div align="center">')
           lines.push(`  <h3>${cat.label}</h3>`)
-          const badgeLine = techs.map((t) => {
+          lines.push(techs.map((t) => {
             const lc = t === 'JavaScript' ? 'black' : 'white'
-            return `  <img src="${badgeUrl(t, techColor(t), techLogo(t), lc)}" />`
-          }).join('\n')
-          lines.push(badgeLine)
+            return `  <img src="${badgeUrl(t, techColor(t), techLogo(t), theme.badgeStyle, lc)}" />`
+          }).join('\n'))
           lines.push('</div>')
           lines.push('')
         }
@@ -109,18 +109,18 @@ export function generateMarkdown(sections: Section[], username: string): string 
         lines.push('')
         if (d.showStats) {
           lines.push('<div align="center">')
-          lines.push(`  <img src="https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&hide_border=true&title_color=00e5ff&icon_color=00e5ff&text_color=c9d1d9&bg_color=0d1117" height="180" />`)
+          lines.push(`  <img src="https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&hide_border=true&title_color=${p}&icon_color=${p}&text_color=${theme.text.replace('#', '')}&bg_color=${theme.bg.replace('#', '')}" height="180" />`)
           if (d.showTopLangs) {
-            lines.push(`  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&hide_border=true&title_color=00e5ff&text_color=00e5ff&bg_color=0d1117" height="180" />`)
+            lines.push(`  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&hide_border=true&title_color=${p}&text_color=${p}&bg_color=${theme.bg.replace('#', '')}" height="180" />`)
           }
           lines.push('</div>')
           lines.push('')
         }
         if (d.showStreak) {
           lines.push('<div align="center">')
-          lines.push(`  <img src="https://streak-stats.demolab.com?user=${username}&hide_border=true&ring=00e5ff&fire=00e5ff&currStreakLabel=00e5ff&sideNums=00e5ff&sideLabels=FFFFFF&dates=8b949e&background=0d1117" height="190" />`)
+          lines.push(`  <img src="https://streak-stats.demolab.com?user=${username}&hide_border=true&ring=${p}&fire=${p}&currStreakLabel=${p}&sideNums=${p}&sideLabels=FFFFFF&dates=8b949e&background=${theme.bg.replace('#', '')}" height="190" />`)
           if (d.showTrophies) {
-            lines.push(`  <img src="https://github-profile-trophy.vercel.app/?username=${username}&theme=algolia&no-frame=true&no-bg=true&row=2&column=3" height="190" />`)
+            lines.push(`  <img src="https://github-profile-trophy.vercel.app/?username=${username}&theme=${theme.trophyTheme}&no-frame=true&no-bg=true&row=2&column=3" height="190" />`)
           }
           lines.push('</div>')
           lines.push('')
@@ -133,15 +133,15 @@ export function generateMarkdown(sections: Section[], username: string): string 
         if (!projects || projects.length === 0) break
         lines.push('<h2 align="center">Proyectos Destacados</h2>')
         lines.push('')
-        for (const p of projects) {
-          if (!p.name) continue
+        for (const pj of projects) {
+          if (!pj.name) continue
           lines.push('<p align="center">')
-          lines.push(`  <a href="${p.url || '#'}"><b>${p.name}</b></a>`)
-          if (p.desc) lines.push(`  &mdash; ${p.desc}`)
+          lines.push(`  <a href="${pj.url || '#'}"><b>${pj.name}</b></a>`)
+          if (pj.desc) lines.push(`  &mdash; ${pj.desc}`)
           lines.push('</p>')
-          if (p.techs && p.techs.length > 0) {
+          if (pj.techs && pj.techs.length > 0) {
             lines.push('<p align="center">')
-            lines.push(p.techs.map((t) => `  <img src="${badgeUrl(t, techColor(t), techLogo(t), t === 'JavaScript' ? 'black' : 'white')}" />`).join('\n'))
+            lines.push(pj.techs.map((t) => `  <img src="${badgeUrl(t, techColor(t), techLogo(t), theme.badgeStyle, t === 'JavaScript' ? 'black' : 'white')}" />`).join('\n'))
             lines.push('</p>')
           }
           lines.push('')
@@ -150,23 +150,33 @@ export function generateMarkdown(sections: Section[], username: string): string 
       }
 
       case 'social': {
-        const gh = d.github as string; const dc = d.discord as string
-        const ig = d.instagram as string; const em = d.email as string
-        const wb = d.website as string; const yt = d.youtube as string
-        const tw = d.twitter as string; const li = d.linkedin as string
-        const hasAny = gh || dc || ig || em || wb || yt || tw || li
-        if (!hasAny) break
+        const f = (k: string) => d[k] as string | undefined
+        const items: [string, string, string][] = []
+        if (f('github')) items.push(['GitHub','100000','github'])
+        if (f('discord')) items.push(['Discord','5865F2','discord'])
+        if (f('instagram')) items.push(['Instagram','E4405F','instagram'])
+        if (f('youtube')) items.push(['YouTube','FF0000','youtube'])
+        if (f('twitter')) items.push(['Twitter','1DA1F2','twitter'])
+        if (f('linkedin')) items.push(['LinkedIn','0077B5','linkedin'])
+        if (f('email')) items.push(['Email','D14836','gmail'])
+        if (f('website')) items.push(['Website','00e5ff','google-chrome'])
+        if (items.length === 0) break
         lines.push('<h2 align="center">Connect With Me</h2>')
         lines.push('')
         lines.push('<div align="center">')
-        if (gh) lines.push(`  <a href="https://github.com/${gh}"><img src="${socialBadgeUrl('GitHub','100000','github')}" /></a>`)
-        if (dc) lines.push(`  <a href="${dc.startsWith('http') ? dc : `https://discord.com/users/${dc}`}"><img src="${socialBadgeUrl('Discord','5865F2','discord')}" /></a>`)
-        if (ig) lines.push(`  <a href="https://www.instagram.com/${ig}"><img src="${socialBadgeUrl('Instagram','E4405F','instagram')}" /></a>`)
-        if (yt) lines.push(`  <a href="https://youtube.com/@${yt}"><img src="${socialBadgeUrl('YouTube','FF0000','youtube')}" /></a>`)
-        if (tw) lines.push(`  <a href="https://twitter.com/${tw}"><img src="${socialBadgeUrl('Twitter','1DA1F2','twitter')}" /></a>`)
-        if (li) lines.push(`  <a href="https://linkedin.com/in/${li}"><img src="${socialBadgeUrl('LinkedIn','0077B5','linkedin')}" /></a>`)
-        if (em) lines.push(`  <a href="mailto:${em}"><img src="${socialBadgeUrl('Email','D14836','gmail')}" /></a>`)
-        if (wb) lines.push(`  <a href="${wb}"><img src="${socialBadgeUrl('Website','00e5ff','google-chrome')}" /></a>`)
+        for (const [platform, color, logo] of items) {
+          let href = ''
+          const v = f(platform.toLowerCase() === 'email' ? 'email' : platform.toLowerCase()) || ''
+          if (platform === 'GitHub') href = `https://github.com/${v}`
+          else if (platform === 'Discord') href = v.startsWith('http') ? v : `https://discord.com/users/${v}`
+          else if (platform === 'Instagram') href = `https://www.instagram.com/${v}`
+          else if (platform === 'YouTube') href = `https://youtube.com/@${v}`
+          else if (platform === 'Twitter') href = `https://twitter.com/${v}`
+          else if (platform === 'LinkedIn') href = `https://linkedin.com/in/${v}`
+          else if (platform === 'Email') href = `mailto:${v}`
+          else if (platform === 'Website') href = v
+          lines.push(`  <a href="${href}"><img src="${socialBadgeUrl(platform, color, logo, theme.badgeStyle)}" /></a>`)
+        }
         lines.push('</div>')
         lines.push('')
         break
@@ -174,8 +184,8 @@ export function generateMarkdown(sections: Section[], username: string): string 
 
       case 'counter': {
         if (d.enabled) {
-          lines.push(`<p align="center">`)
-          lines.push(`  <img src="https://komarev.com/ghpvc/?username=${username}&color=00e5ff&style=flat-square&label=${encodeURIComponent(d.label as string || 'Visitors')}" />`)
+          lines.push('<p align="center">')
+          lines.push(`  <img src="https://komarev.com/ghpvc/?username=${username}&color=${p}&style=flat-square&label=${encodeURIComponent(d.label as string || 'Visitors')}" />`)
           lines.push('</p>')
           lines.push('')
         }
@@ -199,7 +209,7 @@ export function generateMarkdown(sections: Section[], username: string): string 
       case 'quote': {
         if (d.enabled) {
           lines.push('<div align="center">')
-          lines.push('  <img src="https://quotes-github-readme.vercel.app/api?type=horizontal&theme=dark" width="75%" />')
+          lines.push(`  <img src="https://quotes-github-readme.vercel.app/api?type=horizontal&theme=${theme.statsTheme}" width="75%" />`)
           lines.push('</div>')
           lines.push('')
         }
@@ -208,9 +218,9 @@ export function generateMarkdown(sections: Section[], username: string): string 
 
       case 'graph': {
         if (d.enabled) {
-          const color = ((d.color as string) || '#00e5ff').replace('#', '')
+          const c = theme.primary.replace('#', '')
           lines.push('<div align="center">')
-          lines.push(`  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${username}&bg_color=0d1117&color=${color}&line=${color}&point=ffffff&area=true&area_color=${color}&hide_border=true" width="95%" />`)
+          lines.push(`  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${username}&bg_color=${theme.bg.replace('#', '')}&color=${c}&line=${c}&point=ffffff&area=true&area_color=${c}&hide_border=true" width="95%" />`)
           lines.push('</div>')
           lines.push('')
         }
@@ -220,7 +230,7 @@ export function generateMarkdown(sections: Section[], username: string): string 
       case 'footer': {
         const text = d.text as string
         lines.push('<div align="center">')
-        lines.push('  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d7377,50:1a1b41,100:0d1117&height=150&section=footer&animation=fadeIn" width="100%" />')
+        lines.push(`  <img src="https://capsule-render.vercel.app/api?type=waving&color=${theme.bannerGradient}&height=150&section=footer&animation=fadeIn" width="100%" />`)
         lines.push('</div>')
         if (text) {
           lines.push('')
