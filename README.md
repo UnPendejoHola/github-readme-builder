@@ -1,6 +1,22 @@
-# Profile README Builder
+# GitHub Profile Builder
 
-Crea tu perfil de GitHub visualmente con drag & drop. Genera el markdown al instante.
+Crea tu perfil de GitHub visualmente con drag & drop. 11 secciones disponibles, preview en vivo, copia el markdown generado y pegarlo en tu repositorio.
+
+## Secciones
+
+| Icono | Seccion | Descripcion |
+|-------|---------|-------------|
+| 🏠 | Header | Banner animado, nombre, subtitulo, color |
+| 👤 | About Me | Descripcion, GIF animado, puntos clave |
+| 🛠️ | Tech Stack | Tecnologias por categoria con badges |
+| 📊 | GitHub Stats | Stats, top lenguajes, streak, trofeos |
+| 💻 | Proyectos | Proyectos destacados con tecnologias |
+| 🔗 | Redes Sociales | GitHub, Discord, Instagram, YouTube, Twitter, LinkedIn, Email, Web |
+| 👁️ | Contador | Contador de visitas personalizable |
+| 🐍 | Snake | Snake animation de contribuciones |
+| 💬 | Frase Aleatoria | Frases de programacion |
+| 📈 | Contribution Graph | Grafico de actividad |
+| 📄 | Footer | Banner y texto personalizado |
 
 ## Stack
 
@@ -8,14 +24,6 @@ Crea tu perfil de GitHub visualmente con drag & drop. Genera el markdown al inst
 - TypeScript
 - Tailwind CSS
 - dnd-kit (drag & drop)
-
-## Secciones disponibles
-
-- **Header** — banner animado con nombre, subtitulo y color
-- **About Me** — descripcion, GIF animado, puntos clave
-- **Tech Stack** — selecciona tecnologias por categoria (Frontend, Backend, Bases de Datos, Tools)
-- **Redes Sociales** — GitHub, Discord, Instagram, Email, Website
-- **Footer** — texto personalizado
 
 ## Como usar
 
@@ -28,8 +36,12 @@ npm run dev
 
 Abre http://localhost:3000.
 
-Arrastra las secciones para ordenarlas, edita los campos y copia el markdown generado. Pegalo en tu `README.md` del repositorio de perfil.
+1. Selecciona las secciones que quieras
+2. Arrastralas para ordenarlas
+3. Configura cada seccion a tu gusto
+4. Copia el markdown o descarga el archivo
+5. Pegalo en tu `README.md` del perfil de GitHub
 
-## Deploy en Vercel
+## Deploy
 
-Conecta el repositorio a Vercel y desplega. No necesita base de datos ni configuracion extra.
+Conecta a Vercel y despliega. No necesita base de datos.
