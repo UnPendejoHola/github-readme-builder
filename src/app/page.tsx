@@ -8,6 +8,9 @@ import {
   SortableContext, useSortable, verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import { Section, SectionType, SECTION_LABELS, SECTION_ICONS, newSection } from '@/lib/types'
 import { generateMarkdown } from '@/lib/markdown'
 import {
@@ -214,16 +217,18 @@ export default function Home() {
                 </pre>
               ) : (
                 <div className="max-h-[calc(100vh-220px)] overflow-auto p-5">
-                  <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
-                    <div className="space-y-3 text-xs text-zinc-400 font-mono leading-relaxed">
-                      {markdown ? markdown.split('\n').map((line, i) => (
-                        <div key={i} className="whitespace-pre-wrap break-all">{line || ' '}</div>
-                      )) : (
-                        <div className="flex items-center justify-center py-12 text-zinc-600">
-                          Agrega secciones para empezar
-                        </div>
-                      )}
-                    </div>
+                  <div className="rounded-lg bg-zinc-950 p-6">
+                    {markdown ? (
+                      <div className="prose prose-invert prose-sm max-w-none [&_img]:inline-block [&_img]:m-1 [&_table]:w-full [&_td]:p-1">
+                        <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+                          {markdown}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center py-12 text-zinc-600">
+                        Agrega secciones para empezar
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
